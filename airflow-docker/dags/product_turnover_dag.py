@@ -81,6 +81,10 @@ def call_steps_airflow():
     @task
     # Запускаем проверку критического значения
     def check_datamart(dates_list):
+        """
+        В качестве рассчитываемой метрики берется сумма от всех продаж за конкретную дату revizion_date
+        :param dates_list: список дат revizion_date, приходящих из product_new_data.csv
+        """
         hook = PostgresHook(postgres_conn_id="shops_db")
         query = """
                 SELECT count(revizion_date)  
