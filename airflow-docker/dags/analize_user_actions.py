@@ -1,11 +1,8 @@
-from airflow.sdk import dag, task   # для airflow 3.0 вместо decorator
 from airflow.operators.python import PythonOperator
 from airflow import DAG
 import os
 import sqlite3
-from datetime import datetime, timedelta
-import openpyxl
-import numpy as np
+from datetime import datetime
 import pandas as pd
 import plotly.express as px
 
