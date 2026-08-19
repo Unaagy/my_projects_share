@@ -24,6 +24,18 @@ def check_file_existence(file_path):
         raise FileNotFoundError(f"Файл {file_path} не найден!")
     print("Файл присутствует.")
 
+# Функция заглушка для динамического источника, например из PostgreSQL БД
+def load_from_db(table_name):
+    """
+    Загружает таблицу table_name из БД (придуманное имя vkusvill_db) и возвращает pandas DataFrame.
+    """
+    hook = PostgresHook(postgres_conn_id="name_conn_db")
+    query = f""" 
+            SELECT *  FROM {table_name} 
+            """
+    df = hook.get_pandas_df(query)
+    return df
+
 def read_source_file(file_path):
     """
     Функция для чтения файла
@@ -660,6 +672,10 @@ def extract_task():
     df_events = read_source_file(input_file1)
     df_orders = read_source_file(input_file2)
 
+    # Вызов функции load_from_db вместо функции read_source_file
+    # df_events = load_from_db('events')
+    # df_orders = load_from_db('orders')
+
     validate_columns(df_events, required_columns_events)
     validate_columns(df_orders, required_columns_orders)
 
@@ -683,7 +699,6 @@ def transform_task_metrics():
     events = read_source_file(validated_events_path)
     orders = read_source_file(validated_orders_path)
 
-    # csv не хранит dtype - после записи/чтения 'datetime' снова строка, конвертируем обратно
     validate_datetime_column(events)
     validate_datetime_column(orders)
 
