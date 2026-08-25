@@ -15,20 +15,24 @@ class Math:
             print("Введите числаl")
             return None
 
+
 class NegativeNumberError(Exception):
     pass
 
-    def sqrt(self, number: str):
-        try:
-            if float(number) < 0:
-                raise NegativeNumberError("Невозможно вычислить квадратный корень из отрицательного числа")
-            return float(number) ** 0.5
-        except ValueError:
-            print(f"неверный формат ввода {number}, ожидается число")
-        except Exception as e:
-            print(e)
-        finally:
-            print("Операция завершена")
+
+def sqrt(number: str):
+    try:
+        if float(number) < 0:
+            raise NegativeNumberError("Невозможно вычислить квадратный корень из отрицательного числа")
+        return float(number) ** 0.5
+    except ValueError:
+        print(f"неверный формат ввода {number}, ожидается число")
+    except NegativeNumberError as neg:
+        print(neg)
+    except Exception as e:
+        print(e)
+    finally:
+        print("Операция завершена")
 
 
 print("Введите первое число")
@@ -38,5 +42,6 @@ num2 = input()
 res = Math(num1, num2)
 print(res.zero_error())
 
-sq_root = NegativeNumberError()
-print(sq_root.sqrt(num1))
+print("Введите число для вычисления его корня:")
+n = input()
+print(sqrt(n))
