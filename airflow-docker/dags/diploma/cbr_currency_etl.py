@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # вычисляет абсолютный путь к папке для br_currency_transform
+# вычисляем абсолютный путь к папке diploma для поиска файла cbr_currency_transform.py
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from datetime import datetime
 import pendulum
 from airflow.sdk import dag, task
@@ -10,7 +11,7 @@ from cbr_currency_transform import extract_cbr_rates, transform_cbr_rates  # г�
 #Создаем DAG
 @dag(
     dag_id="cbr_exchange_rates_etl",
-    schedule="30 19 * * *",       # каждый день в 19:30 МСК — зафиксировали ранее
+    schedule="30 19 * * *",       # каждый день в 19:30 МСК
     start_date=pendulum.datetime(2026, 7, 1, tz="Europe/Moscow"),   # библиотека для корректной обработки часовых поясов
     catchup=True,
     tags=["diploma", "cbr"],      # теги для поиска daga
@@ -68,14 +69,14 @@ def cbr_exchange_rates_etl():
                     FROM dim_currency
                     WHERE char_code = %(char_code)s
                     ON CONFLICT (currency_id, rate_date)
-                    DO UPDATE SET
+                    DO UPDATE SET       -- блок защиты от идемпотентности при загрузке
                         value = EXCLUDED.value,
                         rate_per_unit = EXCLUDED.rate_per_unit,
                         loaded_at = EXCLUDED.loaded_at;
                 """, rate)
         conn.commit()
 
-    # связка тасков — вот он, ответ на "откуда что берётся"
+    # Определение порядка выполнения задач
     tracked_codes = get_tracked_currencies_task()
     raw_rates = extract_task()
     transformed = transform_task(raw_rates, tracked_codes)

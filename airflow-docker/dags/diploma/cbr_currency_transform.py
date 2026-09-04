@@ -13,7 +13,7 @@ def extract_cbr_rates(date_req: str) -> list[dict]:
     response.encoding = "windows-1251"
 
     root = ET.fromstring(response.text)     # превращает XML-текст в объект-дерево; root — это корневой узел
-    rate_date_raw = root.attrib["Date"]  # дата снапшота из самого ответа - "DD.MM.YYYY"
+    rate_date_raw = root.attrib["Date"]     # дата снапшота из самого ответа - "DD.MM.YYYY"
     rate_date = datetime.strptime(rate_date_raw, "%d.%m.%Y").strftime("%Y-%m-%d")  # преобразуем в "YYYY-MM-DD"
 
     rates = []
