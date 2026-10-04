@@ -1,0 +1,8 @@
+{
+  "spreadsheet_id": "ВСТАВЬТЕ_ID_ТАБЛИЦЫ_ИЗ_URL",
+  "menu_sheet": "Меню",
+  "link_sheets": {
+    "Stock": "Запасы",
+    "Shopping": "Список продуктов"
+  }
+}
