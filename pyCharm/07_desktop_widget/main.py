@@ -3,6 +3,7 @@
 Запуск:
     python main.py               — обычный запуск (так его вызывает Планировщик)
     python main.py --no-refresh  — только записать data.inc, не трогая Rainmeter
+    python main.py --demo        — вымышленное меню для скриншотов (вернуть: python main.py)
 """
 import logging
 import sys
@@ -15,6 +16,7 @@ from requests.exceptions import ConnectionError, Timeout
 
 from config import INC_PATH, LOGS_DIR, MAIN_SCRIPT, PYTHONW, load_settings
 from export import refresh_skin, write_inc
+from demo import demo_menu
 from fetch import fetch_menu, fetch_sheet_urls, open_spreadsheet
 from transform import build_widget_vars, parse_menu
 
@@ -61,8 +63,11 @@ def fetch_with_retry(settings: dict) -> tuple[list[list], dict[str, str]]:
 def main() -> int:
     setup_logging()
     try:
-        settings = load_settings()
-        rows, urls = fetch_with_retry(settings)
+        if "--demo" in sys.argv:
+            rows, urls = demo_menu(date.today())
+            log.info("ДЕМО-режим: вымышленное меню, таблица не загружается")
+        else:
+            rows, urls = fetch_with_retry(load_settings())
 
         menu = parse_menu(rows)
         widget_vars = build_widget_vars(menu, urls, date.today())
