@@ -1,0 +1,22 @@
+# Виртуальное окружение — у каждого своё, пересоздаётся из requirements.txt
+.venv/
+
+# Ключ сервисного аккаунта Google — секрет, в git попадать не должен
+credentials.json
+
+# Личные настройки: ID календарей (шаблон — settings.example.json)
+settings.json
+
+# Логи работы скрипта
+logs/
+
+# Кэш Python
+__pycache__/
+
+# Настройки PyCharm
+.idea/
+
+# Данные календаря (отладочные выгрузки и файл для Rainmeter)
+*.csv
+*.inc
+data/

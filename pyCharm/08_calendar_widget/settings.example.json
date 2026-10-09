@@ -1,0 +1,11 @@
+{
+  "google_account": "ВАШ_АДРЕС@gmail.com",
+  "calendars": [
+    {"name": "Основной", "id": "ВАШ_АДРЕС@gmail.com", "color": "120,190,255"},
+    {"name": "Семейный", "id": "ИДЕНТИФИКАТОР@group.calendar.google.com", "color": "230,110,170"}
+  ],
+  "categories": [
+    {"name": "КАТЕГОРИЯ_1", "color": "192,202,51", "keywords": ["СЛОВО_1", "СЛОВО_2"]},
+    {"name": "КАТЕГОРИЯ_2", "color": "121,134,203", "keywords": ["СЛОВО_3"]}
+  ]
+}

@@ -1,0 +1,3 @@
+# Скины Rainmeter лежат на диске в UTF-16 (иначе нет кириллицы),
+# а в git хранятся в UTF-8 — так видно, что изменилось в каждой правке
+rainmeter/**/*.ini text working-tree-encoding=UTF-16LE-BOM eol=crlf
