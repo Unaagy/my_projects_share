@@ -3,6 +3,7 @@
 Запуск:
     python main.py               — обычный запуск (так его вызывает Планировщик)
     python main.py --no-refresh  — только записать data.inc, не трогая Rainmeter
+    python main.py --demo        — вымышленные события для скриншотов (вернуть: python main.py)
 """
 import logging
 import sys
@@ -15,6 +16,7 @@ from httplib2 import HttpLib2Error
 
 from config import (DAYS_BACK, DAYS_FORWARD, INC_PATH, LOGS_DIR, MAIN_SCRIPT,
                     MAX_EVENTS, PYTHONW, load_settings)
+from demo import demo_calendar
 from export import refresh_skin, write_inc
 from fetch import build_service, fetch_event_colors, fetch_events
 from transform import build_widget_vars, normalize
@@ -61,16 +63,23 @@ def fetch_with_retry(calendars: list[dict], start: datetime, end: datetime):
 def main() -> int:
     setup_logging()
     try:
-        settings = load_settings()
         today = date.today()
         # Границы периода — локальная полночь, с часовым поясом компьютера
         start = datetime.combine(today - timedelta(days=DAYS_BACK), datetime.min.time()).astimezone()
         end = datetime.combine(today + timedelta(days=DAYS_FORWARD + 1), datetime.min.time()).astimezone()
 
-        pairs, google_colors = fetch_with_retry(settings["calendars"], start, end)
-        events = normalize(pairs, settings.get("categories", []), google_colors)
+        if "--demo" in sys.argv:
+            pairs, categories = demo_calendar(today)
+            google_colors, account = {}, ""
+            log.info("ДЕМО-режим: вымышленные события, календарь не загружается")
+        else:
+            settings = load_settings()
+            pairs, google_colors = fetch_with_retry(settings["calendars"], start, end)
+            categories, account = settings.get("categories", []), settings.get("google_account", "")
+
+        events = normalize(pairs, categories, google_colors)
         widget_vars = build_widget_vars(events, today, DAYS_BACK, DAYS_FORWARD, MAX_EVENTS,
-                                        account=settings.get("google_account", ""))
+                                        account=account)
         # Пути для кнопки ↻ — чтобы скин не хранил их у себя
         widget_vars["PythonW"] = str(PYTHONW)
         widget_vars["MainScript"] = str(MAIN_SCRIPT)
