@@ -1,7 +1,3 @@
-# \[English version](README\_EN.md)
-
-
-
 # Bank of Russia Exchange Rate Monitoring: automated ETL and dashboard
 
 A prototype system that downloads official exchange rates from the Bank of Russia API every day, stores the history in PostgreSQL, and shows trends and volatility on an interactive dashboard. Diploma project for the Data Analyst program.
@@ -54,27 +50,27 @@ Files in this folder:
 
 ```
 diploma/
-├── cbr\\\_currency\\\_transform.py   # extract and transform functions (no Airflow dependency)
-└── cbr\\\_currency\\\_etl.py         # the DAG: schedule, tasks, database load
+├── cbr\\\\\\\_currency\\\\\\\_transform.py   # extract and transform functions (no Airflow dependency)
+└── cbr\\\\\\\_currency\\\\\\\_etl.py         # the DAG: schedule, tasks, database load
 ```
 
 \---
 
 ## Data model
 
-Two tables: `dim\\\_currency` (list of currencies, with an `is\\\_tracked` flag) and `fact\\\_exchange\\\_rate` (one row per currency per day). A unique key on `(currency\\\_id, rate\\\_date)` makes the load safe to rerun: a repeated run for the same date updates the row and does not create a duplicate.
+Two tables: `dim\\\\\\\_currency` (list of currencies, with an `is\\\\\\\_tracked` flag) and `fact\\\\\\\_exchange\\\\\\\_rate` (one row per currency per day). A unique key on `(currency\\\\\\\_id, rate\\\\\\\_date)` makes the load safe to rerun: a repeated run for the same date updates the row and does not create a duplicate.
 
-`rate\\\_per\\\_unit = value / nominal`. The Bank of Russia gives some rates per 100 units, so rates must be converted to "per 1 unit" before they can be compared.
+`rate\\\\\\\_per\\\\\\\_unit = value / nominal`. The Bank of Russia gives some rates per 100 units, so rates must be converted to "per 1 unit" before they can be compared.
 
 \---
 
 ## How the DAG works
 
-`cbr\\\_exchange\\\_rates\\\_etl` runs every day at 19:30 Moscow time, after the daily rate publication.
+`cbr\\\\\\\_exchange\\\\\\\_rates\\\\\\\_etl` runs every day at 19:30 Moscow time, after the daily rate publication.
 
-1. Read the tracked currencies from `dim\\\_currency`.
+1. Read the tracked currencies from `dim\\\\\\\_currency`.
 2. Download the rates for the run's logical date.
-3. Keep the tracked currencies and calculate `rate\\\_per\\\_unit`.
+3. Keep the tracked currencies and calculate `rate\\\\\\\_per\\\\\\\_unit`.
 4. Check that all tracked currencies arrived (the task fails with a clear error if not), then write the data with an upsert.
 
 The date comes from the logical date of the Airflow run, not from the current time. So any past run can be cleared and rerun, and it will load the rate for its own date. History from 2026-07-01 is loaded automatically with `catchup=True`.
@@ -85,10 +81,10 @@ The date comes from the logical date of the Airflow run, not from the current ti
 
 ## Metrics
 
-Metrics are calculated in the SQL view `v\\\_exchange\\\_rate\\\_stats`. The dashboard only displays the result.
+Metrics are calculated in the SQL view `v\\\\\\\_exchange\\\\\\\_rate\\\\\\\_stats`. The dashboard only displays the result.
 
-* `pct\\\_change\\\_1d`: percentage change of the rate compared with the previous day.
-* `volatility\\\_30d`: standard deviation of daily percentage changes over the last 30 days. A higher value means a riskier currency.
+* `pct\\\\\\\_change\\\\\\\_1d`: percentage change of the rate compared with the previous day.
+* `volatility\\\\\\\_30d`: standard deviation of daily percentage changes over the last 30 days. A higher value means a riskier currency.
 
 **Why volatility is based on percentages, not on price.** Currencies have very different scales: GBP is about 117 RUB, AMD is about 0.24 RUB. Price spread in rubles cannot be compared between them. Spread of daily percentage changes can.
 
